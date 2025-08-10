@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<title>Countdown für Estella</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+    body {
+        background: #fff8f8;
+        color: #333;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+    }
+    h1 {
+        font-size: 2.2em;
+        margin-bottom: 20px;
+    }
+    #timer {
+        font-size: 3em;
+        font-weight: bold;
+        color: #e63946;
+        background: #ffe3e3;
+        padding: 20px 30px;
+        border-radius: 20px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+</style>
+</head>
+<body>
+
+<h1>Ich vermisse dich Estella ❤️ Nur noch:</h1>
+<div id="timer">00 Tage 00:00:00</div>
+
+<script>
+// Ziel-Datum (Beispiel: 20. August 2025 um 18:00 Uhr CEST)
+const targetDate = new Date("2025-08-14T23:00:00+02:00").getTime();
+
+function updateTimer() {
+    const now = new Date().getTime();
+    const distance = targetDate - now;
+
+    if (distance <= 0) {
+        document.getElementById("timer").innerHTML = "🎉 Endlich ist es soweit! 🎉";
+        return;
+    }
+
+    const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+    document.getElementById("timer").innerHTML =
+        `${days} Tage ${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+}
+
+updateTimer();
+setInterval(updateTimer, 1000);
+</script>
+
+</body>
+</html>
+
