@@ -6,7 +6,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
     body {
-        background: #fff8f8;
+        background: linear-gradient(180deg, #fff8f8, #ffe6e6);
+        transition: background 1s linear;
         color: #333;
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         text-align: center;
@@ -16,6 +17,7 @@
         align-items: center;
         height: 100vh;
         margin: 0;
+        overflow: hidden;
     }
     h1 {
         font-size: 2.2em;
@@ -29,24 +31,61 @@
         padding: 20px 30px;
         border-radius: 20px;
         box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        transition: transform 0.3s;
+    }
+    /* Pulsieren */
+    .pulse {
+        animation: pulse 1s infinite;
+    }
+    @keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+        100% { transform: scale(1); }
+    }
+    /* Wackeln */
+    @keyframes wiggle {
+        0%, 100% { transform: rotate(0deg); }
+        25% { transform: rotate(1deg); }
+        75% { transform: rotate(-1deg); }
+    }
+    .wiggle {
+        animation: wiggle 0.5s infinite;
+    }
+    /* Herzregen */
+    .heart {
+        position: fixed;
+        color: red;
+        font-size: 20px;
+        animation: fall linear forwards;
+        pointer-events: none;
+    }
+    @keyframes fall {
+        to {
+            transform: translateY(100vh);
+            opacity: 0;
+        }
     }
 </style>
 </head>
 <body>
 
-<h1>Ich vermisse dich Estella ❤️ Nur noch:</h1>
-<div id="timer">00 Tage 00:00:00</div>
+<h1 id="message">Ich vermisse dich Estella ❤️ Nur noch:</h1>
+<div id="timer" class="pulse">00 Tage 00:00:00</div>
 
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 <script>
-// Ziel-Datum (Beispiel: 20. August 2025 um 18:00 Uhr CEST)
+// Ziel-Datum
 const targetDate = new Date("2025-08-14T23:00:00+02:00").getTime();
 
 function updateTimer() {
     const now = new Date().getTime();
     const distance = targetDate - now;
+    const timerEl = document.getElementById("timer");
+    const msgEl = document.getElementById("message");
 
     if (distance <= 0) {
-        document.getElementById("timer").innerHTML = "🎉 Endlich ist es soweit! 🎉";
+        timerEl.innerHTML = "🎉 Endlich ist es soweit! 🎉";
+        confetti({ particleCount: 300, spread: 100, origin: { y: 0.6 } });
         return;
     }
 
@@ -55,14 +94,45 @@ function updateTimer() {
     const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
     const seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
-    document.getElementById("timer").innerHTML =
+    timerEl.innerHTML =
         `${days} Tage ${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+
+    // Nachricht anpassen
+    if (hours < 12 && hours >= 6) {
+        msgEl.innerHTML = "Bald ist es soweit 🥹";
+    } else if (hours < 6 && hours >= 2) {
+        msgEl.innerHTML = "Ich kann's kaum erwarten 😭😭";
+    } else if (hours < 2) {
+        msgEl.innerHTML = "Gleich! Gleich! Gleich! 😍😍😍";
+    }
+
+    // Farbintensität je nach Zeit
+    const intensity = Math.min(1, (14 - (distance / 3600000)) / 14); 
+    document.body.style.background = `linear-gradient(180deg, #fff8f8, rgba(255,150,150,${intensity}))`;
+
+    // Wackeln wenn <1h
+    if (distance < 3600000) {
+        timerEl.classList.add("wiggle");
+    }
 }
 
-updateTimer();
+// Herzregen
+function createHeart() {
+    const heart = document.createElement("div");
+    heart.classList.add("heart");
+    heart.style.left = Math.random() * 100 + "vw";
+    heart.style.fontSize = (Math.random() * 20 + 10) + "px";
+    heart.style.animationDuration = (Math.random() * 3 + 2) + "s";
+    heart.innerHTML = "❤️";
+    document.body.appendChild(heart);
+    setTimeout(() => heart.remove(), 5000);
+}
+
 setInterval(updateTimer, 1000);
+updateTimer();
+
+setInterval(createHeart, 300);
 </script>
 
 </body>
 </html>
-
